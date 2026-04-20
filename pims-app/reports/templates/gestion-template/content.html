@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; padding: 20px; color: #333; }
+        .header { text-align: center; color: #2563EB; margin-bottom: 30px; border-bottom: 2px solid #2563EB; padding-bottom: 10px; }
+        .kpi-container { display: flex; justify-content: space-around; margin-bottom: 30px; }
+        .kpi-card { border: 1px solid #eee; padding: 15px; border-radius: 8px; text-align: center; width: 30%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .kpi-value { font-size: 22px; font-weight: bold; color: #2563EB; margin-top: 5px; }
+        .kpi-title { font-size: 11px; color: #666; text-transform: uppercase; font-weight: bold; }
+        h2 { border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 30px; color: #2563EB; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f9f9f9; font-weight: bold; }
+        .critical { color: #cf1322; font-weight: bold; }
+        .footer { margin-top: 40px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #eee; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Análisis de Salud de Inventario</h1>
+        <p>Reporte Ejecutivo | Fecha: {{fecha}}</p>
+    </div>
+
+    <div class="kpi-container">
+        <div class="kpi-card">
+            <div class="kpi-title">TOTAL PRODUCTOS</div>
+            <div class="kpi-value">{{kpis.totalProductos}}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">VALOR INVENTARIO</div>
+            <div class="kpi-value">${{kpis.valorizacion}}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">BAJO STOCK</div>
+            <div class="kpi-value" style="color: {{#if kpis.stockCritico}}#cf1322{{else}}#3f8600{{/if}}">
+                {{kpis.stockCritico}}
+            </div>
+        </div>
+    </div>
+
+    <h2>Top Categorías por Cantidad</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Categoría</th>
+                <th>Cantidad de Productos (SKU)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each topCategorias}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{count}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <h2>Productos por Reordenar (Bajo Stock)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Producto</th>
+                <th>Stock Actual</th>
+                <th>Stock Mínimo</th>
+                <th>Proveedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each reorderList}}
+            <tr>
+                <td>{{sku}}</td>
+                <td>{{nombre}}</td>
+                <td class="critical">{{stock_actual}}</td>
+                <td>{{stock_minimo}}</td>
+                <td>{{proveedor}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>Este es un documento confidencial generado por PIMS Admin - {{fecha}}</p>
+    </div>
+</body>
+</html>

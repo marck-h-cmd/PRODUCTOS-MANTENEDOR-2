@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+pims-app/backend/node_modules/
+pims-app/frontend/node_modules/
+
+# Environment Variables
+.env
+pims-app/backend/.env
+pims-app/frontend/.env
+
+# Build outputs
+dist/
+pims-app/frontend/dist/
+build/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS related files
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# jsReport temp files
+pims-app/backend/temp/
+pims-app/backend/data/

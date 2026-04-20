@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; padding: 20px; }
+        .header { text-align: center; border-bottom: 2px solid #2563EB; padding-bottom: 10px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; color: #333; }
+        .footer { margin-top: 30px; font-size: 10px; text-align: right; color: #888; }
+        .total-row { font-weight: bold; background-color: #f9f9f9; }
+        .tag { background: #e6f7ff; border: 1px solid #91d5ff; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Reporte de Inventario Actual</h1>
+        <p>Categoría: <strong>{{categoria}}</strong> | Fecha: {{fecha}}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Nombre</th>
+                <th>Proveedor</th>
+                <th>Stock</th>
+                <th>P. Venta</th>
+                <th>Valor Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each productos}}
+            <tr>
+                <td>{{sku}}</td>
+                <td>{{nombre}}</td>
+                <td>{{proveedor}}</td>
+                <td>{{stock_actual}}</td>
+                <td>${{precio_venta}}</td>
+                <td>${{decimalMultiply stock_actual precio_venta}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="3" style="text-align: right;">TOTAL INVENTARIO:</td>
+                <td>{{totalStock}}</td>
+                <td>-</td>
+                <td>${{totalValor}}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="footer">
+        Generado automáticamente por PIMS Admin - {{fecha}}
+    </div>
+</body>
+</html>
