@@ -24,15 +24,27 @@ const validateProductCreate = (req, res, next) => {
   // Validar SKU
   if (!sku || typeof sku !== 'string' || sku.trim().length === 0) {
     errors.push('SKU es requerido y debe ser texto');
-  } else if (sku.length > 50) {
-    errors.push('SKU no puede exceder 50 caracteres');
+  } else {
+    const trimmedSku = sku.trim();
+    if (trimmedSku.length > 50) {
+      errors.push('SKU no puede exceder 50 caracteres');
+    }
+    if (!/^[A-Z0-9-]+$/.test(trimmedSku)) {
+      errors.push('SKU solo puede contener letras mayúsculas, números y guiones');
+    }
   }
 
   // Validar nombre
   if (!nombre || typeof nombre !== 'string' || nombre.trim().length === 0) {
     errors.push('Nombre es requerido');
-  } else if (nombre.length > 200) {
-    errors.push('Nombre no puede exceder 200 caracteres');
+  } else {
+    const trimmedNombre = nombre.trim();
+    if (trimmedNombre.length < 3) {
+      errors.push('Nombre debe tener al menos 3 caracteres');
+    }
+    if (trimmedNombre.length > 200) {
+      errors.push('Nombre no puede exceder 200 caracteres');
+    }
   }
 
   // Validar categoría
@@ -41,32 +53,40 @@ const validateProductCreate = (req, res, next) => {
   }
 
   // Validar precio compra
-  if (precio_compra === undefined || precio_compra === null) {
-    errors.push('Precio de compra es requerido');
-  } else if (isNaN(parseFloat(precio_compra)) || parseFloat(precio_compra) < 0) {
-    errors.push('Precio de compra debe ser un número positivo');
+  const pCompra = parseFloat(precio_compra);
+  if (precio_compra === undefined || precio_compra === null || isNaN(pCompra)) {
+    errors.push('Precio de compra es requerido y debe ser un número');
+  } else if (pCompra <= 0) {
+    errors.push('Precio de compra debe ser mayor a 0');
   }
 
   // Validar precio venta
-  if (precio_venta === undefined || precio_venta === null) {
-    errors.push('Precio de venta es requerido');
-  } else if (isNaN(parseFloat(precio_venta)) || parseFloat(precio_venta) < 0) {
-    errors.push('Precio de venta debe ser un número positivo');
+  const pVenta = parseFloat(precio_venta);
+  if (precio_venta === undefined || precio_venta === null || isNaN(pVenta)) {
+    errors.push('Precio de venta es requerido y debe ser un número');
+  } else if (pVenta <= 0) {
+    errors.push('Precio de venta debe ser mayor a 0');
   }
 
-  // Validar que precio venta >= precio compra (opcional pero recomendado)
-  if (parseFloat(precio_venta) < parseFloat(precio_compra)) {
+  // Validar que precio venta >= precio compra
+  if (!isNaN(pVenta) && !isNaN(pCompra) && pVenta < pCompra) {
     errors.push('Precio de venta debe ser mayor o igual al precio de compra');
   }
 
   // Validar stock actual
-  if (stock_actual !== undefined && (isNaN(parseInt(stock_actual)) || parseInt(stock_actual) < 0)) {
-    errors.push('Stock actual debe ser un número entero positivo');
+  if (stock_actual !== undefined && stock_actual !== null) {
+    const sActual = parseInt(stock_actual);
+    if (isNaN(sActual) || sActual < 0) {
+      errors.push('Stock actual debe ser un número entero mayor o igual a 0');
+    }
   }
 
   // Validar stock mínimo
-  if (stock_minimo !== undefined && (isNaN(parseInt(stock_minimo)) || parseInt(stock_minimo) < 0)) {
-    errors.push('Stock mínimo debe ser un número entero positivo');
+  if (stock_minimo !== undefined && stock_minimo !== null) {
+    const sMinimo = parseInt(stock_minimo);
+    if (isNaN(sMinimo) || sMinimo < 0) {
+      errors.push('Stock mínimo debe ser un número entero mayor o igual a 0');
+    }
   }
 
   if (errors.length > 0) {
@@ -96,39 +116,60 @@ const validateProductUpdate = (req, res, next) => {
   const errors = [];
 
   // Validaciones opcionales (solo si el campo está presente)
-  if (sku !== undefined) {
-    if (typeof sku !== 'string' || sku.trim().length === 0) {
+  if (sku !== undefined && sku !== null) {
+    const trimmedSku = sku.trim();
+    if (typeof sku !== 'string' || trimmedSku.length === 0) {
       errors.push('SKU debe ser texto no vacío');
-    } else if (sku.length > 50) {
+    } else if (trimmedSku.length > 50) {
       errors.push('SKU no puede exceder 50 caracteres');
     }
-  }
-
-  if (nombre !== undefined && nombre.length > 200) {
-    errors.push('Nombre no puede exceder 200 caracteres');
-  }
-
-  if (precio_compra !== undefined) {
-    if (isNaN(parseFloat(precio_compra)) || parseFloat(precio_compra) < 0) {
-      errors.push('Precio de compra debe ser un número positivo');
+    if (!/^[A-Z0-9-]+$/.test(trimmedSku)) {
+      errors.push('SKU solo puede contener letras mayúsculas, números y guiones');
     }
   }
 
-  if (precio_venta !== undefined) {
-    if (isNaN(parseFloat(precio_venta)) || parseFloat(precio_venta) < 0) {
-      errors.push('Precio de venta debe ser un número positivo');
+  if (nombre !== undefined && nombre !== null) {
+    const trimmedNombre = nombre.trim();
+    if (trimmedNombre.length < 3) {
+      errors.push('Nombre debe tener al menos 3 caracteres');
+    }
+    if (trimmedNombre.length > 200) {
+      errors.push('Nombre no puede exceder 200 caracteres');
     }
   }
 
-  if (stock_actual !== undefined) {
-    if (isNaN(parseInt(stock_actual)) || parseInt(stock_actual) < 0) {
-      errors.push('Stock actual debe ser un número entero positivo');
+  if (precio_compra !== undefined && precio_compra !== null) {
+    const pCompra = parseFloat(precio_compra);
+    if (isNaN(pCompra) || pCompra <= 0) {
+      errors.push('Precio de compra debe ser un número mayor a 0');
     }
   }
 
-  if (stock_minimo !== undefined) {
-    if (isNaN(parseInt(stock_minimo)) || parseInt(stock_minimo) < 0) {
-      errors.push('Stock mínimo debe ser un número entero positivo');
+  if (precio_venta !== undefined && precio_venta !== null) {
+    const pVenta = parseFloat(precio_venta);
+    if (isNaN(pVenta) || pVenta <= 0) {
+      errors.push('Precio de venta debe ser un número mayor a 0');
+    }
+  }
+
+  // Validar relación de precios si ambos están presentes
+  if (precio_compra !== undefined && precio_venta !== undefined) {
+    if (parseFloat(precio_venta) < parseFloat(precio_compra)) {
+      errors.push('Precio de venta debe ser mayor o igual al precio de compra');
+    }
+  }
+
+  if (stock_actual !== undefined && stock_actual !== null) {
+    const sActual = parseInt(stock_actual);
+    if (isNaN(sActual) || sActual < 0) {
+      errors.push('Stock actual debe ser un número entero mayor o igual a 0');
+    }
+  }
+
+  if (stock_minimo !== undefined && stock_minimo !== null) {
+    const sMinimo = parseInt(stock_minimo);
+    if (isNaN(sMinimo) || sMinimo < 0) {
+      errors.push('Stock mínimo debe ser un número entero mayor o igual a 0');
     }
   }
 

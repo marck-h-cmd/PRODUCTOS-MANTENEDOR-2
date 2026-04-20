@@ -222,40 +222,103 @@ const Productos = () => {
           layout="vertical"
           onFinish={onFinish}
           initialValues={{ stock_actual: 0, stock_minimo: 5 }}
+          validateTrigger="onBlur"
         >
-          <Form.Item name="sku" label="SKU" rules={[{ required: true, message: 'El SKU es obligatorio' }]}>
-            <Input disabled={!!editingProduct} />
+          <Form.Item 
+            name="sku" 
+            label="SKU" 
+            rules={[
+              { required: true, message: 'El SKU es obligatorio' },
+              { max: 50, message: 'El SKU no puede tener más de 50 caracteres' },
+              { pattern: /^[A-Z0-9-]+$/, message: 'Solo letras mayúsculas, números y guiones' }
+            ]}
+          >
+            <Input disabled={!!editingProduct} placeholder="Ej: PROD-001" />
           </Form.Item>
-          <Form.Item name="nombre" label="Nombre" rules={[{ required: true, message: 'El nombre es obligatorio' }]}>
-            <Input />
+          
+          <Form.Item 
+            name="nombre" 
+            label="Nombre" 
+            rules={[
+              { required: true, message: 'El nombre es obligatorio' },
+              { min: 3, message: 'El nombre debe tener al menos 3 caracteres' },
+              { max: 200, message: 'El nombre no puede exceder los 200 caracteres' }
+            ]}
+          >
+            <Input placeholder="Nombre descriptivo del producto" />
           </Form.Item>
-          <Form.Item name="descripcion" label="Descripción">
-            <Input.TextArea rows={3} />
+          
+          <Form.Item 
+            name="descripcion" 
+            label="Descripción"
+            rules={[{ max: 500, message: 'La descripción no puede exceder los 500 caracteres' }]}
+          >
+            <Input.TextArea rows={3} placeholder="Detalles adicionales del producto..." />
           </Form.Item>
+          
           <Space style={{ display: 'flex' }} align="baseline">
-            <Form.Item name="categoria" label="Categoría" style={{ width: 220 }}>
+            <Form.Item 
+              name="categoria" 
+              label="Categoría" 
+              style={{ width: 220 }}
+              rules={[{ required: true, message: 'La categoría es obligatoria' }]}
+            >
               <Input placeholder="Ej. Electrónica" />
             </Form.Item>
             <Form.Item name="proveedor" label="Proveedor" style={{ width: 220 }}>
-              <Input />
+              <Input placeholder="Nombre del proveedor" />
             </Form.Item>
           </Space>
+          
           <Space style={{ display: 'flex' }} align="baseline">
-            <Form.Item name="precio_compra" label="Precio Compra" rules={[{ required: true }]}>
-              <InputNumber min={0} precision={2} style={{ width: 140 }} prefix="$" />
+            <Form.Item 
+              name="precio_compra" 
+              label="Precio Compra" 
+              rules={[
+                { required: true, message: 'Campo requerido' },
+                { type: 'number', min: 0.01, message: 'Debe ser mayor a 0' }
+              ]}
+            >
+              <InputNumber precision={2} style={{ width: 140 }} prefix="$" />
             </Form.Item>
-            <Form.Item name="precio_venta" label="Precio Venta" rules={[{ required: true }]}>
-              <InputNumber min={0} precision={2} style={{ width: 140 }} prefix="$" />
+            
+            <Form.Item 
+              name="precio_venta" 
+              label="Precio Venta" 
+              dependencies={['precio_compra']}
+              rules={[
+                { required: true, message: 'Campo requerido' },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || value >= getFieldValue('precio_compra')) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Debe ser ≥ precio compra'));
+                  },
+                }),
+              ]}
+            >
+              <InputNumber precision={2} style={{ width: 140 }} prefix="$" />
             </Form.Item>
           </Space>
+          
           <Space style={{ display: 'flex' }} align="baseline">
-            <Form.Item name="stock_actual" label="Stock Actual">
-              <InputNumber min={0} style={{ width: 140 }} />
+            <Form.Item 
+              name="stock_actual" 
+              label="Stock Actual"
+              rules={[{ type: 'number', min: 0, message: 'Mínimo 0' }]}
+            >
+              <InputNumber style={{ width: 140 }} />
             </Form.Item>
-            <Form.Item name="stock_minimo" label="Stock Mínimo">
-              <InputNumber min={0} style={{ width: 140 }} />
+            <Form.Item 
+              name="stock_minimo" 
+              label="Stock Mínimo"
+              rules={[{ type: 'number', min: 0, message: 'Mínimo 0' }]}
+            >
+              <InputNumber style={{ width: 140 }} />
             </Form.Item>
           </Space>
+          
           <Form.Item style={{ textAlign: 'right', marginBottom: 0, marginTop: 24 }}>
             <Button onClick={handleCancel} style={{ marginRight: 8 }}>Cancelar</Button>
             <Button type="primary" htmlType="submit">Guardar</Button>
